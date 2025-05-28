@@ -6,16 +6,14 @@ import CurrencySelect from "../components/CurrencySelect";
 const CurrencyExchange = () => {
   const { state, dispatch } = useCurrencyContext();
   const { currencies, loading, error } = state;
-
   useEffect(() => {
-    let isMounted = true; // Para evitar actualizaciones en componentes desmontados
+    const controller = new AbortController();
 
     const getData = async () => {
       dispatch({ type: "FETCH_CURRENCIES_START" });
-      try {
-        const data = await fetchCurrencies();
 
-        if (!isMounted) return; // No actualizar si el componente se desmontó
+      try {
+        const data = await fetchCurrencies({ signal: controller.signal });
 
         if (!data?.length) {
           throw new Error("Received empty data");
@@ -23,19 +21,19 @@ const CurrencyExchange = () => {
 
         dispatch({ type: "FETCH_CURRENCIES_SUCCESS", payload: data });
       } catch (err) {
-        if (isMounted) {
-          dispatch({
-            type: "FETCH_CURRENCIES_ERROR",
-            payload: err.message || "Failed to load currencies",
-          });
-        }
+        if (err.name === "AbortError") return; // Se abortó la solicitud, no hacer nada
+
+        dispatch({
+          type: "FETCH_CURRENCIES_ERROR",
+          payload: err.message || "Failed to load currencies",
+        });
       }
     };
 
     getData();
 
     return () => {
-      isMounted = false; // Cleanup
+      controller.abort(); // Cancelar la solicitud si el componente se desmonta
     };
   }, [dispatch]);
 
