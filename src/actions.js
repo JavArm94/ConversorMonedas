@@ -4,9 +4,9 @@ export const GET_CURRENCIES_SUCCESS = "GET_CURRENCIES_SUCCESS";
 export const GET_CURRENCIES_ERROR = "GET_CURRENCIES_ERROR";
 
 // informacion para cargar los selectores de monedas
-export const GET_COMBO_BEGIN = "GET_COMBO_BEGIN";
-export const GET_COMBO_SUCCESS = "GET_COMBO_SUCCESS";
-export const GET_COMBO_ERROR = "GET_COMBO_ERROR";
+export const GET_CONVERSION_BEGIN = "GET_CONVERSION_BEGIN";
+export const GET_CONVERSION_SUCCESS = "GET_CONVERSION_SUCCESS";
+export const GET_CONVERSION_ERROR = "GET_CONVERSION_ERROR";
 
 // informacion para las monedas a intercambiar
 export const GET_EXCHANGE_BEGIN = "GET_EXCHANGE_BEGIN";

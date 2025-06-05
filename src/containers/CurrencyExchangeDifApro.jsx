@@ -5,18 +5,15 @@ import CurrencySelect from "../components/CurrencySelect";
 
 const CurrencyExchange = () => {
   const { state, dispatch } = useCurrencyContext();
-  const { currencies, loading, error, conversion } = state;
-  const [fromCurrency, setFromCurrency] = useState("USD");
-  const [toCurrency, setToCurrency] = useState("ARS");
+  const { currencies, loading, error } = state;
+  const [fromCurrency, setFromCurrency] = useState(currencies[0]?.nombre || "");
+  const [toCurrency, setToCurrency] = useState(currencies[1]?.nombre || "");
   const [initialized, setInitialized] = useState(false);
   const [value, setValue] = useState(1);
-  const [localConversion, setLocalConversion] = useState();
-  const [resultado, setResultado] = useState(0);
 
   const handleSwap = () => {
     setFromCurrency(toCurrency);
     setToCurrency(fromCurrency);
-    setLocalConversion();
   };
 
   const setAmount = () => {
@@ -26,69 +23,79 @@ const CurrencyExchange = () => {
         currencies[0]?.nombre;
 
       const defaultTo =
-        currencies.find((c) => c.nombre === "ARS")?.nombre ||
+        currencies.find((c) => c.nombre === "EUR")?.nombre ||
         currencies[1]?.nombre ||
         currencies[0]?.nombre;
 
       setFromCurrency(defaultFrom);
       setToCurrency(defaultTo);
       setInitialized(true);
+      console.log(currencies);
     }
   };
 
   useEffect(() => {
     setAmount();
-    console.log("estado log" + loading, error, conversion);
   }, [currencies]);
 
   useEffect(() => {
     const controller = new AbortController();
-    dispatch({ type: "FETCH_CURRENCIES_START" });
 
-    fetchCurrencies({ signal: controller.signal })
-      .then((data) => {
+    const getData = async () => {
+      console.log("hit");
+
+      dispatch({ type: "FETCH_CURRENCIES_START" });
+
+      try {
+        const data = await fetchCurrencies({ signal: controller.signal });
+
         if (!data?.length) {
           throw new Error("Received empty data");
         }
+
         dispatch({ type: "FETCH_CURRENCIES_SUCCESS", payload: data });
-      })
-      .catch((err) => {
-        if (err.name === "AbortError") return;
+      } catch (err) {
+        if (err.name === "AbortError") return; // Se abortó la solicitud, no hacer nada
+
         dispatch({
           type: "FETCH_CURRENCIES_ERROR",
           payload: err.message || "Failed to load currencies",
         });
-      });
+      }
+    };
 
-    return () => controller.abort();
-  }, [dispatch]);
+    const getConversion = async () => {
+      dispatch({ type: "FETCH_CONVERSION_START" });
 
-  useEffect(() => {
-    if (!fromCurrency || !toCurrency || !value || !initialized) return;
+      try {
+        const data = await fetchConversion({
+          signal: controller.signal,
+          fromCurrency,
+          toCurrency,
+          value,
+        });
 
-    dispatch({ type: "FETCH_CONVERSION_START" });
-
-    fetchConversion(fromCurrency, toCurrency)
-      .then((data) => {
-        if (!data) throw new Error("Empty conversion");
-        console.log("AVER" + data);
+        if (!data?.length) {
+          throw new Error("Received empty data");
+        }
 
         dispatch({ type: "FETCH_CONVERSION_SUCCESS", payload: data });
-      })
-      .catch((err) => {
+      } catch (err) {
+        if (err.name === "AbortError") return; // Se abortó la solicitud, no hacer nada
+
         dispatch({
           type: "FETCH_CONVERSION_ERROR",
-          payload: err.message || "Conversion failed",
+          payload: err.message || "Failed to load conversion",
         });
-      });
-  }, [fromCurrency, toCurrency, dispatch, initialized]);
+      }
+    };
 
-  useEffect(() => {
-    if (conversion) {
-      setLocalConversion(conversion);
-      setResultado((value * conversion).toFixed(2));
-    }
-  }, [conversion, value]);
+    getData();
+    getConversion();
+    //  return () => {
+    //    controller.abort(); // Cancelar la solicitud si el componente se desmonta
+    //  };
+  }, [dispatch]);
 
   if (loading && !currencies.length && !initialized) return <p>Cargando...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -109,11 +116,8 @@ const CurrencyExchange = () => {
         onCurrencyChange={setToCurrency}
         amount={value}
         onAmountChange={setValue}
-        show={false}
       />
-      <label>
-        Resultado: <span>{resultado ? resultado : "Calculando..."}</span>
-      </label>
+      <label></label>
     </div>
   );
 };
