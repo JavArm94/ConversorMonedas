@@ -1,3 +1,5 @@
+import { Container, Select, Input } from "./CurrencySelect.styles";
+
 const CurrencySelect = ({
   currencies,
   selected,
@@ -6,16 +8,16 @@ const CurrencySelect = ({
   onAmountChange,
   show = true,
 }) => (
-  <div className="currency">
+  <Container className="currency">
     {show ? (
-      <input
+      <Input
         type="number"
         value={amount}
         onChange={(e) => onAmountChange(e.target.value)}
         style={{ marginRight: "10px" }}
       />
     ) : null}
-    <select value={selected} onChange={(e) => onCurrencyChange(e.target.value)}>
+    <Select value={selected} onChange={(e) => onCurrencyChange(e.target.value)}>
       {currencies?.length > 0 ? (
         currencies.map((currency) => (
           <option key={currency.nombre} value={currency.nombre}>
@@ -25,8 +27,8 @@ const CurrencySelect = ({
       ) : (
         <option value="">No currencies available</option>
       )}
-    </select>
-  </div>
+    </Select>
+  </Container>
 );
 
 export default CurrencySelect;
