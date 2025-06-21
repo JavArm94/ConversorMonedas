@@ -1,0 +1,34 @@
+[
+  { "codigo": "BA", "iibb": 2.0, "descripcion": "Buenos Aires" },
+  {
+    "codigo": "CABA",
+    "iibb": 2.0,
+    "descripcion": "Ciudad Autónoma de Buenos Aires"
+  },
+  { "codigo": "CBA", "iibb": 3.0, "descripcion": "Córdoba" },
+  { "codigo": "CHO", "iibb": 5.5, "descripcion": "Chubut" },
+  { "codigo": "CHT", "iibb": 0.0, "descripcion": "Chaco" },
+  { "codigo": "CTS", "iibb": 0.0, "descripcion": "Catamarca" },
+  { "codigo": "CX", "iibb": 0.0, "descripcion": "Corrientes" },
+  { "codigo": "ER", "iibb": 0.0, "descripcion": "Entre Ríos" },
+  { "codigo": "FX", "iibb": 0.0, "descripcion": "Formosa" },
+  { "codigo": "JX", "iibb": 0.0, "descripcion": "Jujuy" },
+  { "codigo": "LP", "iibb": 0.0, "descripcion": "La Pampa" },
+  { "codigo": "LR", "iibb": 1.0, "descripcion": "La Rioja" },
+  { "codigo": "MZA", "iibb": 0.0, "descripcion": "Mendoza" },
+  { "codigo": "MS", "iibb": 0.0, "descripcion": "Misiones" },
+  { "codigo": "NX", "iibb": 0.0, "descripcion": "Neuquén" },
+  { "codigo": "RN", "iibb": 4.0, "descripcion": "Río Negro" },
+  { "codigo": "SX", "iibb": 5.0, "descripcion": "Salta" },
+  { "codigo": "SC", "iibb": 3.6, "descripcion": "Santa Cruz" },
+  { "codigo": "SF", "iibb": 0.0, "descripcion": "Santa Fe" },
+  { "codigo": "SJ", "iibb": 0.0, "descripcion": "San Juan" },
+  { "codigo": "SE", "iibb": 0.0, "descripcion": "Santiago del Estero" },
+  { "codigo": "SL", "iibb": 0.0, "descripcion": "San Luis" },
+  {
+    "codigo": "TX",
+    "iibb": 0.0,
+    "descripcion": "Tierra del Fuego, Antártida e Islas del Atlántico Sur"
+  },
+  { "codigo": "TAIS", "iibb": 3.0, "descripcion": "Tucumán" }
+]

@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { fetchConversion } from "../api/currencyService";
+import { fetchCurrencies, fetchConversion } from "../api/currencyService";
 import { useCurrencyContext } from "../context/CurrencyContext";
 import CurrencySelect from "../components/CurrencySelect";
-import currencyData from "../assets/CurrencyTranslate.json";
 
 const CurrencyExchange = () => {
   const { state, dispatch } = useCurrencyContext();
-  const { currencies, conversion, error } = state;
-
-  const [fromCurrency, setFromCurrency] = useState("");
-  const [toCurrency, setToCurrency] = useState("");
+  const { currencies, loading, error, conversion } = state;
+  const [fromCurrency, setFromCurrency] = useState("USD");
+  const [toCurrency, setToCurrency] = useState("ARS");
   const [initialized, setInitialized] = useState(false);
   const [value, setValue] = useState(1);
   const [localConversion, setLocalConversion] = useState();
@@ -21,30 +19,51 @@ const CurrencyExchange = () => {
     setLocalConversion();
   };
 
-  // Cargar y ordenar monedas una vez
-  useEffect(() => {
-    if (!currencies.length) {
-      const sortedCurrencies = [...currencyData].sort((a, b) =>
-        a.descripcion.localeCompare(b.descripcion)
-      );
-      dispatch({ type: "FETCH_CURRENCIES_SUCCESS", payload: sortedCurrencies });
-    }
-  }, [currencies, dispatch]);
-
-  // Establecer valores por defecto al inicializar
-  useEffect(() => {
+  const setAmount = () => {
     if (currencies.length && !initialized) {
-      const dolarEEUU = currencies.find((c) => c.nombre === "USD")?.nombre;
-      const pesoArgentino = currencies.find((c) => c.nombre === "ARS")?.nombre;
+      const defaultFrom =
+        currencies.find((c) => c.nombre === "USD")?.nombre ||
+        currencies[0]?.nombre;
 
-      setFromCurrency(dolarEEUU || currencies[0].nombre);
-      setToCurrency(
-        pesoArgentino || currencies[1]?.nombre || currencies[0].nombre
-      );
+      const defaultTo =
+        currencies.find((c) => c.nombre === "ARS")?.nombre ||
+        currencies[1]?.nombre ||
+        currencies[0]?.nombre;
+
+      setFromCurrency(defaultFrom);
+      setToCurrency(defaultTo);
       setInitialized(true);
     }
-  }, [currencies, initialized]);
-  // Realizar conversión
+  };
+
+  useEffect(() => {
+    setAmount();
+    console.log("estado log" + loading, error, conversion);
+  }, [currencies]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    dispatch({ type: "FETCH_CURRENCIES_START" });
+
+    fetchCurrencies({ signal: controller.signal })
+      .then((data) => {
+        if (!data?.length) {
+          throw new Error("Received empty data");
+        }
+        console.log(data);
+        dispatch({ type: "FETCH_CURRENCIES_SUCCESS", payload: data });
+      })
+      .catch((err) => {
+        if (err.name === "AbortError") return;
+        dispatch({
+          type: "FETCH_CURRENCIES_ERROR",
+          payload: err.message || "Failed to load currencies",
+        });
+      });
+
+    return () => controller.abort();
+  }, [dispatch]);
+
   useEffect(() => {
     if (!fromCurrency || !toCurrency || !value || !initialized) return;
 
@@ -53,6 +72,8 @@ const CurrencyExchange = () => {
     fetchConversion(fromCurrency, toCurrency)
       .then((data) => {
         if (!data) throw new Error("Empty conversion");
+        console.log("AVER" + data);
+
         dispatch({ type: "FETCH_CONVERSION_SUCCESS", payload: data });
       })
       .catch((err) => {
@@ -70,7 +91,7 @@ const CurrencyExchange = () => {
     }
   }, [conversion, value]);
 
-  if (!initialized) return <p>Cargando monedas...</p>;
+  if (loading && !currencies.length && !initialized) return <p>Cargando...</p>;
   if (error) return <p>Error: {error}</p>;
 
   return (
