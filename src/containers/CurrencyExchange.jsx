@@ -21,7 +21,6 @@ const CurrencyExchange = () => {
     setLocalConversion();
   };
 
-  // Cargar y ordenar monedas una vez
   useEffect(() => {
     if (!currencies.length) {
       const sortedCurrencies = [...currencyData].sort((a, b) =>
@@ -31,7 +30,6 @@ const CurrencyExchange = () => {
     }
   }, [currencies, dispatch]);
 
-  // Establecer valores por defecto al inicializar
   useEffect(() => {
     if (currencies.length && !initialized) {
       const dolarEEUU = currencies.find((c) => c.nombre === "USD")?.nombre;
@@ -44,7 +42,7 @@ const CurrencyExchange = () => {
       setInitialized(true);
     }
   }, [currencies, initialized]);
-  // Realizar conversión
+
   useEffect(() => {
     if (!fromCurrency || !toCurrency || !value || !initialized) return;
 

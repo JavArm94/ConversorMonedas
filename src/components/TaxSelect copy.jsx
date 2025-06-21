@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Container, Select, Input } from "./CurrencySelect.styles";
 
-// Carga de provincias y alícuotas desde las variables de entorno
 const provincias = import.meta.env.VITE_PROV_STRING.split("_");
 const alicuotas = import.meta.env.VITE_IIBB_STRING.split("_");
 
@@ -10,7 +9,6 @@ const provinciasConIIBB = provincias.map((prov, idx) => ({
   alicuota: parseFloat(alicuotas[idx]) || 0.0,
 }));
 
-// Función que aplica el 30% de ganancias
 function calcularGanancias(valor) {
   return valor * 0.3;
 }
@@ -25,7 +23,6 @@ const TaxSelect = () => {
 
   const montoNumerico = parseFloat(monto) || 0;
 
-  // Cálculos de impuestos
   const iva = montoNumerico * 0.21;
   const iibb = montoNumerico * (alicuotaSeleccionada / 100);
   const ganancias = calcularGanancias(montoNumerico);

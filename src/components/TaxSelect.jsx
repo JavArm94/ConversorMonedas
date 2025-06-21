@@ -2,13 +2,11 @@ import { useState, useMemo } from "react";
 import { Container, Select, Input } from "./CurrencySelect.styles";
 import provinciasRaw from "../assets/provincias";
 
-// Función que aplica el 30% de ganancias
 function calcularGanancias(valor) {
   return valor * 0.3;
 }
 
 const TaxSelect = () => {
-  // Ordenar alfabéticamente una vez
   const provincias = useMemo(
     () =>
       [...provinciasRaw].sort((a, b) =>
@@ -17,7 +15,6 @@ const TaxSelect = () => {
     []
   );
 
-  // Usar "Córdoba" como valor inicial
   const defaultProvincia =
     provincias.find((p) => p.descripcion === "Buenos Aires")?.codigo ||
     provincias[0].codigo;
@@ -32,7 +29,6 @@ const TaxSelect = () => {
   const alicuotaSeleccionada = provinciaSeleccionada?.iibb || 0.0;
   const montoNumerico = parseFloat(monto) || 0;
 
-  // Cálculos
   const iva = montoNumerico * 0.21;
   const iibb = montoNumerico * (alicuotaSeleccionada / 100);
   const ganancias = calcularGanancias(montoNumerico);
