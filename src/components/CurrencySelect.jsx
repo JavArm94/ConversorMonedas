@@ -21,7 +21,7 @@ const CurrencySelect = ({
       {currencies?.length > 0 ? (
         currencies.map((currency) => (
           <option key={currency.nombre} value={currency.nombre}>
-            {currency.descripcion}
+            {currency.descripcion} {currency.personalizada ? "(Usuario)" : ""}
           </option>
         ))
       ) : (

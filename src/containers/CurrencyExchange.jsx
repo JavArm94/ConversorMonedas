@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import { fetchConversion } from "../api/currencyService";
 import { useCurrencyContext } from "../context/CurrencyContext";
 import CurrencySelect from "../components/CurrencySelect";
-import currencyData from "../assets/CurrencyTranslate.json";
+import {
+  loadAllCurrencies,
+  convertirDesdePersonalizada,
+} from "../utils/CurrencyUtils";
 
 const CurrencyExchange = () => {
   const { state, dispatch } = useCurrencyContext();
@@ -23,10 +26,8 @@ const CurrencyExchange = () => {
 
   useEffect(() => {
     if (!currencies.length) {
-      const sortedCurrencies = [...currencyData].sort((a, b) =>
-        a.descripcion.localeCompare(b.descripcion)
-      );
-      dispatch({ type: "FETCH_CURRENCIES_SUCCESS", payload: sortedCurrencies });
+      const allCurrencies = loadAllCurrencies();
+      dispatch({ type: "FETCH_CURRENCIES_SUCCESS", payload: allCurrencies });
     }
   }, [currencies, dispatch]);
 
@@ -48,18 +49,46 @@ const CurrencyExchange = () => {
 
     dispatch({ type: "FETCH_CONVERSION_START" });
 
-    fetchConversion(fromCurrency, toCurrency)
-      .then((data) => {
-        if (!data) throw new Error("Empty conversion");
-        dispatch({ type: "FETCH_CONVERSION_SUCCESS", payload: data });
-      })
-      .catch((err) => {
+    const monedaFrom = currencies.find((c) => c.nombre === fromCurrency);
+    const monedaTo = currencies.find((c) => c.nombre === toCurrency);
+
+    const esFromPersonalizada = monedaFrom?.personalizada;
+    const esToPersonalizada = monedaTo?.personalizada;
+
+    const convertir = async () => {
+      try {
+        let resultadoFinal = 0;
+
+        if (esFromPersonalizada && !esToPersonalizada) {
+          resultadoFinal = await convertirDesdePersonalizada(
+            monedaFrom,
+            value,
+            toCurrency,
+            fetchConversion
+          );
+        } else if (!esFromPersonalizada && esToPersonalizada) {
+          const valorEnUSD = await fetchConversion(fromCurrency, "USD");
+          const enUSD = value * valorEnUSD;
+          resultadoFinal = enUSD / monedaTo.valor;
+        } else if (esFromPersonalizada && esToPersonalizada) {
+          const enUSD = value * monedaFrom.valor;
+          resultadoFinal = enUSD / monedaTo.valor;
+        } else {
+          const data = await fetchConversion(fromCurrency, toCurrency);
+          resultadoFinal = value * data;
+        }
+
+        dispatch({ type: "FETCH_CONVERSION_SUCCESS", payload: resultadoFinal });
+      } catch (err) {
         dispatch({
           type: "FETCH_CONVERSION_ERROR",
           payload: err.message || "Conversion failed",
         });
-      });
-  }, [fromCurrency, toCurrency, dispatch, initialized]);
+      }
+    };
+
+    convertir();
+  }, [fromCurrency, toCurrency, dispatch, initialized, value, currencies]);
 
   useEffect(() => {
     if (conversion) {
