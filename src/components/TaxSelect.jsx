@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Container, Select, Input } from "./CurrencySelect.styles";
-import provinciasRaw from "../assets/provincias";
+import provinciasRaw from "../assets/Provincias.json";
 
 function calcularGanancias(valor) {
   return valor * 0.3;
