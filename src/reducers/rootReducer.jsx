@@ -1,6 +1,7 @@
+import { loadCustomCurrencies } from "../utils/CurrencyHelpers";
+
 export default function rootReducer(state, action) {
   switch (action.type) {
-    // Currency
     case "FETCH_CURRENCIES_START":
       return { ...state, loading: true, error: null };
     case "FETCH_CURRENCIES_SUCCESS":
@@ -10,6 +11,16 @@ export default function rootReducer(state, action) {
         currencies: action.payload,
         loading: false,
       };
+    case "FORCE_RELOAD_CURRENCIES": {
+      const monedasPersonalizadas = loadCustomCurrencies();
+      return {
+        ...state,
+        currencies: [
+          ...state.currencies.filter((m) => !m.custom),
+          ...monedasPersonalizadas,
+        ],
+      };
+    }
     case "FETCH_CURRENCIES_ERROR":
       return {
         ...state,
@@ -18,7 +29,6 @@ export default function rootReducer(state, action) {
         loading: false,
       };
 
-    // Conversion
     case "FETCH_CONVERSION_START":
       return { ...state, loading: true, error: null };
     case "FETCH_CONVERSION_SUCCESS":

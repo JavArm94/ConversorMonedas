@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import { getCustomCurrencies } from "../utils/CurrencyUtils";
 const apiKey = import.meta.env.VITE_API_KEY;
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -7,12 +7,10 @@ export const fetchCurrencies = async () => {
   try {
     const response = await axios.get(`${apiUrl}/list?access_key=${apiKey}`);
 
-    // Check if the response contains currencies data
     if (!response.data?.currencies) {
       throw new Error("Invalid API response structure");
     }
 
-    // Transform the currencies object into an array
     const symbolsArray = Object.entries(response.data.currencies).map(
       ([code, name]) => ({
         nombre: code,
@@ -20,13 +18,12 @@ export const fetchCurrencies = async () => {
       })
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // delay para evitar que rechaze la api
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     return symbolsArray;
   } catch (error) {
     console.error("Error fetching currencies:", error);
 
-    // Handle different types of errors
     let errorMessage = "Failed to fetch currencies";
     if (error.response) {
       errorMessage = `API Error: ${error.response.status} - ${
@@ -42,15 +39,46 @@ export const fetchCurrencies = async () => {
 
 export const fetchConversion = async (from, to) => {
   try {
-    console.log("from" + from, "to" + to);
+    const customCurrencies = getCustomCurrencies();
 
+    const fromCustom = customCurrencies.find(
+      (c) => c.nombre.toUpperCase() === from.toUpperCase()
+    );
+    const toCustom = customCurrencies.find(
+      (c) => c.nombre.toUpperCase() === to.toUpperCase()
+    );
+
+    if (fromCustom && toCustom) {
+      const usdValue = 1 * fromCustom.valor;
+      const result = usdValue / toCustom.valor;
+      return result;
+    }
+
+    if (fromCustom) {
+      const usdAmount = 1 * fromCustom.valor;
+
+      if (to.toUpperCase() === "USD") return usdAmount;
+
+      const response = await axios.get(
+        `${apiUrl}/convert?access_key=${apiKey}&from=USD&to=${to}&amount=${usdAmount}`
+      );
+      return response.data.result;
+    }
+
+    // Solo "to" es personalizada
+    if (toCustom) {
+      const response = await axios.get(
+        `${apiUrl}/convert?access_key=${apiKey}&from=${from}&to=USD&amount=1`
+      );
+      const usdValue = response.data.result;
+      return usdValue / toCustom.valor;
+    }
+
+    // Ambas son monedas oficiales
     const response = await axios.get(
       `${apiUrl}/convert?access_key=${apiKey}&from=${from}&to=${to}&amount=1`
     );
 
-    console.log(response);
-
-    // Check if the response contains currencies data
     if (!response.data?.result) {
       throw new Error("Invalid API response structure");
     }
@@ -59,7 +87,6 @@ export const fetchConversion = async (from, to) => {
   } catch (error) {
     console.error("Error fetching conversion:", error);
 
-    // Handle different types of errors
     let errorMessage = "Failed to fetch conversion";
     if (error.response) {
       errorMessage = `API Error: ${error.response.status} - ${

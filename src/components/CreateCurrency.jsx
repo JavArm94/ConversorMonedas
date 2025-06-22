@@ -1,56 +1,47 @@
 import { useState } from "react";
 import { useCurrencyContext } from "../context/CurrencyContext";
-import { Container, Select, Input, Button } from "./CurrencySelect.styles";
-import { fetchConversion } from "../api/currencyService"; // asegurate de que esté bien importado
+import { Container, Input, Button } from "./CurrencySelect.styles";
 
 const CreateCurrency = () => {
-  const { state } = useCurrencyContext();
-  const { currencies } = state;
+  const { dispatch } = useCurrencyContext();
 
   const [nombreMoneda, setNombreMoneda] = useState("");
   const [cantidad, setCantidad] = useState("");
-  const [monedaReferencia, setMonedaReferencia] = useState("");
 
-  const handleGuardar = async () => {
-    if (!nombreMoneda || !cantidad || !monedaReferencia) {
+  const handleGuardar = () => {
+    if (!nombreMoneda.trim() || !cantidad) {
       alert("Por favor, completá todos los campos.");
       return;
     }
 
     const cantidadNumerica = parseFloat(cantidad);
-    if (isNaN(cantidadNumerica) || cantidadNumerica === 0) {
-      alert("La cantidad debe ser un número válido y mayor a 0.");
+    if (isNaN(cantidadNumerica) || cantidadNumerica <= 0) {
+      alert("La cantidad debe ser un número válido mayor a 0.");
       return;
     }
 
-    try {
-      const result = await fetchConversion(monedaReferencia, "USD");
+    const valorContraDolar = 1 / cantidadNumerica;
 
-      if (!result || isNaN(result)) {
-        throw new Error("Resultado inválido de la conversión.");
-      }
+    const nuevaMoneda = {
+      Moneda: nombreMoneda.toUpperCase(),
+      Cantidad: cantidadNumerica,
+      ConvertidoA: {
+        nombre: "USD",
+        valor: valorContraDolar,
+      },
+    };
 
-      const valorContraDolar = result / cantidadNumerica;
+    localStorage.setItem(
+      `moneda_${nuevaMoneda.Moneda.toLowerCase()}`,
+      JSON.stringify(nuevaMoneda)
+    );
 
-      const nuevaMoneda = {
-        Moneda: nombreMoneda,
-        Cantidad: cantidadNumerica,
-        ConvertidoA: {
-          nombre: monedaReferencia,
-          valor: valorContraDolar,
-        },
-      };
-
-      localStorage.setItem(
-        `moneda_${nombreMoneda}`,
-        JSON.stringify(nuevaMoneda)
-      );
-      alert("Moneda guardada correctamente en localStorage.");
-    } catch (error) {
-      console.error("Error al guardar la moneda:", error);
-      alert("Error al guardar la moneda: " + error.message);
-    }
+    alert("Moneda guardada correctamente en localStorage.");
+    dispatch({ type: "FORCE_RELOAD_CURRENCIES" });
+    setNombreMoneda("");
+    setCantidad("");
   };
+
   return (
     <Container>
       <h2>Crear Moneda Personalizada</h2>
@@ -60,29 +51,18 @@ const CreateCurrency = () => {
         type="text"
         placeholder="Ej: MiPeso"
         value={nombreMoneda}
-        onChange={(e) => setNombreMoneda(e.target.value)}
+        onChange={(e) => setNombreMoneda(e.target.value.toUpperCase())}
       />
 
-      <label>Cantidad que representa 1 {monedaReferencia || "USD"}:</label>
+      <label>¿Cuántos {nombreMoneda || "MiMoneda"} equivalen a 1 USD?</label>
       <Input
         type="number"
         placeholder="Ej: 5500"
         value={cantidad}
+        min="0.0001"
+        step="any"
         onChange={(e) => setCantidad(e.target.value)}
       />
-
-      <label>Moneda base de referencia:</label>
-      <Select
-        value={monedaReferencia}
-        onChange={(e) => setMonedaReferencia(e.target.value)}
-      >
-        <option value="">Seleccione una moneda</option>
-        {currencies.map((currency) => (
-          <option key={currency.nombre} value={currency.nombre}>
-            {currency.nombre} - {currency.descripcion}
-          </option>
-        ))}
-      </Select>
 
       <Button onClick={handleGuardar}>Guardar Moneda</Button>
     </Container>

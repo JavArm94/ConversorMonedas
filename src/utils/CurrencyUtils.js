@@ -1,6 +1,6 @@
 import currencyList from "../assets/CurrencyTranslate.json";
 
-const getCustomCurrencies = () => {
+export const getCustomCurrencies = () => {
   const custom = [];
 
   for (let key in localStorage) {
@@ -35,7 +35,6 @@ export const loadAllCurrencies = () => {
   );
 
   const personalizadas = getCustomCurrencies();
-
   return [...oficiales, ...personalizadas];
 };
 

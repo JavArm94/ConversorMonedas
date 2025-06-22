@@ -2,10 +2,7 @@ import React, { useEffect, useState } from "react";
 import { fetchConversion } from "../api/currencyService";
 import { useCurrencyContext } from "../context/CurrencyContext";
 import CurrencySelect from "../components/CurrencySelect";
-import {
-  loadAllCurrencies,
-  convertirDesdePersonalizada,
-} from "../utils/CurrencyUtils";
+import currencyData from "../assets/CurrencyTranslate.json";
 
 const CurrencyExchange = () => {
   const { state, dispatch } = useCurrencyContext();
@@ -17,17 +14,26 @@ const CurrencyExchange = () => {
   const [value, setValue] = useState(1);
   const [localConversion, setLocalConversion] = useState();
   const [resultado, setResultado] = useState(0);
+  const [isFetching, setIsFetching] = useState(false);
 
   const handleSwap = () => {
+    if (localConversion) {
+      setLocalConversion(1 / localConversion);
+      setResultado((value * (1 / localConversion)).toFixed(2));
+    } else {
+      setLocalConversion(undefined);
+    }
+
     setFromCurrency(toCurrency);
     setToCurrency(fromCurrency);
-    setLocalConversion();
   };
 
   useEffect(() => {
     if (!currencies.length) {
-      const allCurrencies = loadAllCurrencies();
-      dispatch({ type: "FETCH_CURRENCIES_SUCCESS", payload: allCurrencies });
+      const sortedCurrencies = [...currencyData].sort((a, b) =>
+        a.descripcion.localeCompare(b.descripcion)
+      );
+      dispatch({ type: "FETCH_CURRENCIES_SUCCESS", payload: sortedCurrencies });
     }
   }, [currencies, dispatch]);
 
@@ -47,55 +53,45 @@ const CurrencyExchange = () => {
   useEffect(() => {
     if (!fromCurrency || !toCurrency || !value || !initialized) return;
 
+    const fromCustom = currencies.find(
+      (c) => c.nombre === fromCurrency && c.valor
+    );
+    const toCustom = currencies.find((c) => c.nombre === toCurrency && c.valor);
+
+    if (fromCustom?.personalizada || toCustom?.personalizada) return;
+
+    setIsFetching(true);
     dispatch({ type: "FETCH_CONVERSION_START" });
 
-    const monedaFrom = currencies.find((c) => c.nombre === fromCurrency);
-    const monedaTo = currencies.find((c) => c.nombre === toCurrency);
-
-    const esFromPersonalizada = monedaFrom?.personalizada;
-    const esToPersonalizada = monedaTo?.personalizada;
-
-    const convertir = async () => {
-      try {
-        let resultadoFinal = 0;
-
-        if (esFromPersonalizada && !esToPersonalizada) {
-          resultadoFinal = await convertirDesdePersonalizada(
-            monedaFrom,
-            value,
-            toCurrency,
-            fetchConversion
-          );
-        } else if (!esFromPersonalizada && esToPersonalizada) {
-          const valorEnUSD = await fetchConversion(fromCurrency, "USD");
-          const enUSD = value * valorEnUSD;
-          resultadoFinal = enUSD / monedaTo.valor;
-        } else if (esFromPersonalizada && esToPersonalizada) {
-          const enUSD = value * monedaFrom.valor;
-          resultadoFinal = enUSD / monedaTo.valor;
-        } else {
-          const data = await fetchConversion(fromCurrency, toCurrency);
-          resultadoFinal = value * data;
-        }
-
-        dispatch({ type: "FETCH_CONVERSION_SUCCESS", payload: resultadoFinal });
-      } catch (err) {
+    fetchConversion(fromCurrency, toCurrency)
+      .then((data) => {
+        if (!data) throw new Error("Empty conversion");
+        dispatch({ type: "FETCH_CONVERSION_SUCCESS", payload: data });
+      })
+      .catch((err) => {
         dispatch({
           type: "FETCH_CONVERSION_ERROR",
           payload: err.message || "Conversion failed",
         });
-      }
-    };
-
-    convertir();
-  }, [fromCurrency, toCurrency, dispatch, initialized, value, currencies]);
+      })
+      .finally(() => {
+        setIsFetching(false);
+      });
+  }, [fromCurrency, toCurrency, dispatch, initialized]);
 
   useEffect(() => {
     if (conversion) {
       setLocalConversion(conversion);
-      setResultado((value * conversion).toFixed(2));
+      setResultado((value * conversion).toFixed(conversion >= 0.01 ? 2 : 4));
     }
   }, [conversion, value]);
+
+  const handleValueChange = (val) => {
+    const parsed = parseFloat(val);
+    if (!isNaN(parsed) && parsed > 0) {
+      setValue(parsed);
+    }
+  };
 
   if (!initialized) return <p>Cargando monedas...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -107,17 +103,20 @@ const CurrencyExchange = () => {
         selected={fromCurrency}
         onCurrencyChange={setFromCurrency}
         amount={value}
-        onAmountChange={setValue}
+        onAmountChange={handleValueChange}
       />
-      <button onClick={handleSwap}>⇄</button>
+      <button onClick={handleSwap} disabled={isFetching}>
+        ⇄
+      </button>
       <CurrencySelect
         currencies={currencies}
         selected={toCurrency}
         onCurrencyChange={setToCurrency}
         amount={value}
-        onAmountChange={setValue}
+        onAmountChange={handleValueChange}
         show={false}
       />
+      {isFetching && <p>Cargando conversión...</p>}
       <label>
         Resultado: <span>{resultado ? resultado : "Calculando..."}</span>
       </label>
