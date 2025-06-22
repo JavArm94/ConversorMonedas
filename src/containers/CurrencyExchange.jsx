@@ -14,11 +14,17 @@ const CurrencyExchange = () => {
   const [value, setValue] = useState(1);
   const [localConversion, setLocalConversion] = useState();
   const [resultado, setResultado] = useState(0);
+  const [isSwapping, setIsSwapping] = useState(false); // estado para delay
 
   const handleSwap = () => {
-    setFromCurrency(toCurrency);
-    setToCurrency(fromCurrency);
-    setLocalConversion();
+    setIsSwapping(true); // desactiva el botón
+
+    setTimeout(() => {
+      setFromCurrency(toCurrency);
+      setToCurrency(fromCurrency);
+      setLocalConversion();
+      setIsSwapping(false); // vuelve a activar después del delay
+    }, 1000); // 1 segundo = 1000ms
   };
 
   useEffect(() => {
@@ -72,23 +78,30 @@ const CurrencyExchange = () => {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div>
-      <CurrencySelect
-        currencies={currencies}
-        selected={fromCurrency}
-        onCurrencyChange={setFromCurrency}
-        amount={value}
-        onAmountChange={setValue}
-      />
-      <button onClick={handleSwap}>⇄</button>
-      <CurrencySelect
-        currencies={currencies}
-        selected={toCurrency}
-        onCurrencyChange={setToCurrency}
-        amount={value}
-        onAmountChange={setValue}
-        show={false}
-      />
+    <div className="sentCurrencyExchange">
+      <div className="exchangeBox">
+        <CurrencySelect
+          currencies={currencies}
+          selected={fromCurrency}
+          onCurrencyChange={setFromCurrency}
+          amount={value}
+          onAmountChange={setValue}
+        />
+
+        <button onClick={handleSwap} disabled={isSwapping}>
+          {isSwapping ? "..." : "⇄"}
+        </button>
+
+        <CurrencySelect
+          currencies={currencies}
+          selected={toCurrency}
+          onCurrencyChange={setToCurrency}
+          amount={value}
+          onAmountChange={setValue}
+          show={false}
+        />
+      </div>
+
       <label>
         Resultado: <span>{resultado ? resultado : "Calculando..."}</span>
       </label>
