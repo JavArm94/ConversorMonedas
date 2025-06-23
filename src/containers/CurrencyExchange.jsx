@@ -97,26 +97,28 @@ const CurrencyExchange = () => {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div>
-      <CurrencySelect
-        currencies={currencies}
-        selected={fromCurrency}
-        onCurrencyChange={setFromCurrency}
-        amount={value}
-        onAmountChange={handleValueChange}
-      />
-      <button onClick={handleSwap} disabled={isFetching}>
-        ⇄
-      </button>
-      <CurrencySelect
-        currencies={currencies}
-        selected={toCurrency}
-        onCurrencyChange={setToCurrency}
-        amount={value}
-        onAmountChange={handleValueChange}
-        show={false}
-      />
-      {isFetching && <p>Cargando conversión...</p>}
+    <div className="sentCurrencyExchange">
+      <div className="exchangeBox">
+        <CurrencySelect
+          currencies={currencies}
+          selected={fromCurrency}
+          onCurrencyChange={setFromCurrency}
+          amount={value}
+          onAmountChange={handleValueChange}
+        />
+        <button onClick={handleSwap} disabled={isFetching}>
+          ⇄
+        </button>
+        <CurrencySelect
+          currencies={currencies}
+          selected={toCurrency}
+          onCurrencyChange={setToCurrency}
+          amount={value}
+          onAmountChange={handleValueChange}
+          show={false}
+        />
+        {isFetching && <p>Cargando conversión...</p>}{" "}
+      </div>
       <label>
         Resultado: <span>{resultado ? resultado : "Calculando..."}</span>
       </label>

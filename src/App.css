@@ -1,3 +1,30 @@
+/* === ESTRUCTURA GENERAL === */
+
+body {
+  background-color: #82a3a1;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, sans-serif;
+}
+
+button {
+  background-color: transparent;
+}
+
+input {
+  height: 2em;
+  width: 3em;
+}
+
+select {
+  width: 13em;
+  height: 3em;
+}
+
+label {
+  font-size: 1em;
+}
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -5,15 +32,132 @@
   text-align: center;
 }
 
+/* === TÍTULO PRINCIPAL === */
+.title {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #000000;
+}
+
+/* === CONTENEDORES === */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.main-section {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+/* === TARJETAS === */
+.card {
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+  padding: 2rem;
+  color: #213547;
+}
+
+.exchange-card {
+  background-color: #9fc490;
+  width: 36em;
+  height: 8em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tax-card {
+  background-color: #82a3a1;
+  width: 36em;
+}
+
+.create-card {
+  background-color: #465362;
+  color: white;
+  max-width: 600px;
+  width: 36em;
+}
+
+.sentCurrencyExchange {
+  display: flex;
+  flex-direction: column;
+}
+
+.exchangeBox {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 1em;
+}
+
+.taxSelectContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.taxItems {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1.5em;
+}
+
+.selectableTax {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.amountLabel {
+  margin-left: 1em;
+}
+
+.amountInput {
+  width: 11.5em !important;
+}
+
+.currencyContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.currencyInfoBox {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2em;
+  margin-top: 1em;
+}
+
+.saveCurrencyBox {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.saveCurrencyButton {
+  margin-left: 1em;
+}
+/* === LOGO (si se usa) === 
 .logo {
   height: 6em;
   padding: 1.5em;
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -33,10 +177,7 @@
   }
 }
 
-.card {
-  padding: 2em;
-}
-
+/* === TEXTO INFORMAL === */
 .read-the-docs {
   color: #888;
 }

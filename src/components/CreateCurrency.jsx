@@ -44,27 +44,38 @@ const CreateCurrency = () => {
 
   return (
     <Container>
-      <h2>Crear Moneda Personalizada</h2>
-
-      <label>Nombre de la nueva moneda:</label>
-      <Input
-        type="text"
-        placeholder="Ej: MiPeso"
-        value={nombreMoneda}
-        onChange={(e) => setNombreMoneda(e.target.value.toUpperCase())}
-      />
-
-      <label>¿Cuántos {nombreMoneda || "MiMoneda"} equivalen a 1 USD?</label>
-      <Input
-        type="number"
-        placeholder="Ej: 5500"
-        value={cantidad}
-        min="0.0001"
-        step="any"
-        onChange={(e) => setCantidad(e.target.value)}
-      />
-
-      <Button onClick={handleGuardar}>Guardar Moneda</Button>
+      <div className="currencyContainer">
+        <h2>Crear Moneda Personalizada</h2>
+        <div className="currencyInfoBox">
+          <label>Nombre de la nueva moneda:</label>
+          <Input
+            className="amountInput"
+            type="text"
+            placeholder="Ej: MiPeso"
+            value={nombreMoneda}
+            onChange={(e) => setNombreMoneda(e.target.value.toUpperCase())}
+          />
+        </div>
+        <div className="currencyInfoBox">
+          <label className="amountLabel">
+            ¿Cuántos {nombreMoneda || "MiMoneda"} equivalen a 1 USD?
+          </label>
+          <Input
+            className="amountInput"
+            type="number"
+            placeholder="Ej: 5500"
+            value={cantidad}
+            min="0.0001"
+            step="any"
+            onChange={(e) => setCantidad(e.target.value)}
+          />
+        </div>
+        <div className="saveCurrencyBox">
+          <Button className="saveCurrencyButton" onClick={handleGuardar}>
+            Guardar Moneda
+          </Button>
+        </div>
+      </div>
     </Container>
   );
 };

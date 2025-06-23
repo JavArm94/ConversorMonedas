@@ -36,40 +36,48 @@ const TaxSelect = () => {
 
   return (
     <Container>
-      <label htmlFor="provincia">Provincia:</label>
-      <Select
-        id="provincia"
-        value={selectedProvincia}
-        onChange={(e) => setSelectedProvincia(e.target.value)}
-      >
-        {provincias.map((prov) => (
-          <option key={prov.codigo} value={prov.codigo}>
-            {prov.descripcion}
-          </option>
-        ))}
-      </Select>
+      <div className="taxSelectContainer">
+        <div className="selectableTax">
+          <label htmlFor="provincia">Provincia:</label>
+          <Select
+            id="provincia"
+            value={selectedProvincia}
+            onChange={(e) => setSelectedProvincia(e.target.value)}
+          >
+            {provincias.map((prov) => (
+              <option key={prov.codigo} value={prov.codigo}>
+                {prov.descripcion}
+              </option>
+            ))}
+          </Select>
 
-      <label htmlFor="monto">Monto:</label>
-      <Input
-        id="monto"
-        type="number"
-        placeholder="Ingrese monto en pesos"
-        value={monto}
-        onChange={(e) => setMonto(e.target.value)}
-      />
+          <label className="amountLabel" htmlFor="monto">
+            Monto:
+          </label>
+          <Input
+            className="amountInput"
+            id="monto"
+            type="number"
+            placeholder="Ingrese monto en pesos"
+            value={monto}
+            onChange={(e) => setMonto(e.target.value)}
+          />
+        </div>
+        <div className="taxItems">
+          <div>
+            <label>IIBB: {alicuotaSeleccionada}%</label>
+          </div>
+          <div>
+            <label>IVA: 21%</label>
+          </div>
+          <div>
+            <label>Ganancias: 30%</label>
+          </div>
 
-      <div>
-        <label>IIBB: {alicuotaSeleccionada}%</label>
-      </div>
-      <div>
-        <label>IVA: 21%</label>
-      </div>
-      <div>
-        <label>Ganancias: 30%</label>
-      </div>
-
-      <div style={{ marginTop: "1rem", fontWeight: "bold" }}>
-        <label>Total final: ${total.toFixed(2)}</label>
+          <div style={{ marginTop: "1rem", fontWeight: "bold" }}>
+            <label>Total final: ${total.toFixed(2)}</label>
+          </div>
+        </div>
       </div>
     </Container>
   );
