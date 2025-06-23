@@ -27,7 +27,7 @@ function App() {
             <CurrencyExchange />
           </div>
           <div className="card tax-card">
-          <h2>Conversion de divisas</h2>
+          <h2>Cálculo de impuestos</h2>
             <TaxSelect />
           </div>
 
