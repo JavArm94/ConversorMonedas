@@ -21,6 +21,29 @@ export default function rootReducer(state, action) {
         ],
       };
     }
+    case "FORCE_RECONVERT": {
+      return {
+        ...state,
+        reconvert: true,
+      };
+    }
+    case "CLEAR_RECONVERT": {
+      return {
+        ...state,
+        reconvert: false,
+      };
+    }
+    case "FORCE_CONVERSION_FALLBACK":
+      return {
+        ...state,
+        fallbackConversion: action.payload,
+      };
+
+    case "CLEAR_FALLBACK_CONVERSION":
+      return {
+        ...state,
+        fallbackConversion: null,
+      };
     case "FETCH_CURRENCIES_ERROR":
       return {
         ...state,

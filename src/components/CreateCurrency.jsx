@@ -36,7 +36,7 @@ const CreateCurrency = () => {
       JSON.stringify(nuevaMoneda)
     );
 
-    alert("Moneda guardada correctamente en localStorage.");
+    alert("Moneda guardada correctamente");
     dispatch({ type: "FORCE_RELOAD_CURRENCIES" });
     setNombreMoneda("");
     setCantidad("");

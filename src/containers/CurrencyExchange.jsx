@@ -13,7 +13,7 @@ const CurrencyExchange = () => {
   const [initialized, setInitialized] = useState(false);
   const [value, setValue] = useState(1);
   const [localConversion, setLocalConversion] = useState();
-  const [resultado, setResultado] = useState(0);
+  const [resultado, setResultado] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
 
   const handleSwap = () => {
@@ -23,7 +23,6 @@ const CurrencyExchange = () => {
     } else {
       setLocalConversion(undefined);
     }
-
     setFromCurrency(toCurrency);
     setToCurrency(fromCurrency);
   };
@@ -34,6 +33,7 @@ const CurrencyExchange = () => {
         a.descripcion.localeCompare(b.descripcion)
       );
       dispatch({ type: "FETCH_CURRENCIES_SUCCESS", payload: sortedCurrencies });
+      dispatch({ type: "FORCE_RELOAD_CURRENCIES" });
     }
   }, [currencies, dispatch]);
 
@@ -51,6 +51,56 @@ const CurrencyExchange = () => {
   }, [currencies, initialized]);
 
   useEffect(() => {
+    if (!initialized || !currencies.length) return;
+
+    const currencyCodes = currencies.map((c) => c.nombre);
+    const fromValid = currencyCodes.includes(fromCurrency);
+    const toValid = currencyCodes.includes(toCurrency);
+
+    const defaultFrom = currencyCodes.includes("USD")
+      ? "USD"
+      : currencies[0].nombre;
+    const defaultTo = currencyCodes.includes("ARS")
+      ? "ARS"
+      : currencies[1]?.nombre || currencies[0].nombre;
+
+    if (!fromValid || !toValid) {
+      const newFrom = fromValid ? fromCurrency : defaultFrom;
+      const newTo = toValid ? toCurrency : defaultTo;
+
+      setFromCurrency(newFrom);
+      setToCurrency(newTo);
+      fetchConversion(newFrom, newTo)
+        .then((data) => {
+          dispatch({ type: "FETCH_CONVERSION_SUCCESS", payload: data });
+        })
+        .catch((err) => {
+          dispatch({
+            type: "FETCH_CONVERSION_ERROR",
+            payload: err.message || "Conversion failed",
+          });
+        });
+    }
+  }, [currencies, fromCurrency, toCurrency, initialized, dispatch]);
+
+  useEffect(() => {
+    if (state.reconvert && fromCurrency && toCurrency && value) {
+      fetchConversion(fromCurrency, toCurrency)
+        .then((data) => {
+          dispatch({ type: "FETCH_CONVERSION_SUCCESS", payload: data });
+          dispatch({ type: "CLEAR_RECONVERT" });
+        })
+        .catch((err) => {
+          dispatch({
+            type: "FETCH_CONVERSION_ERROR",
+            payload: err.message || "Error al forzar conversión",
+          });
+          dispatch({ type: "CLEAR_RECONVERT" });
+        });
+    }
+  }, [state.reconvert, fromCurrency, toCurrency, value, dispatch]);
+
+  useEffect(() => {
     if (!fromCurrency || !toCurrency || !value || !initialized) return;
 
     const fromCustom = currencies.find(
@@ -62,7 +112,6 @@ const CurrencyExchange = () => {
 
     setIsFetching(true);
     dispatch({ type: "FETCH_CONVERSION_START" });
-
     fetchConversion(fromCurrency, toCurrency)
       .then((data) => {
         if (!data) throw new Error("Empty conversion");
@@ -93,35 +142,42 @@ const CurrencyExchange = () => {
     }
   };
 
-  if (!initialized) return <p>Cargando monedas...</p>;
-  if (error) return <p>Error: {error}</p>;
+  const loadingGlobal = !initialized || isFetching || resultado === null;
+
+  // if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="sentCurrencyExchange">
-      <div className="exchangeBox">
-        <CurrencySelect
-          currencies={currencies}
-          selected={fromCurrency}
-          onCurrencyChange={setFromCurrency}
-          amount={value}
-          onAmountChange={handleValueChange}
-        />
-        <button onClick={handleSwap} disabled={isFetching}>
-          ⇄
-        </button>
-        <CurrencySelect
-          currencies={currencies}
-          selected={toCurrency}
-          onCurrencyChange={setToCurrency}
-          amount={value}
-          onAmountChange={handleValueChange}
-          show={false}
-        />
-        {isFetching && <p>Cargando conversión...</p>}{" "}
-      </div>
-      <label>
-        Resultado: <span>{resultado ? resultado : "Calculando..."}</span>
-      </label>
+      {loadingGlobal ? (
+        <div className="loadingContainer">
+          <span className="spinner" />
+          <p>Cargando...</p>
+        </div>
+      ) : (
+        <div className="exchangeBox">
+          <CurrencySelect
+            currencies={currencies}
+            selected={fromCurrency}
+            onCurrencyChange={setFromCurrency}
+            amount={value}
+            onAmountChange={handleValueChange}
+          />
+          <button onClick={handleSwap} disabled={isFetching}>
+            ⇄
+          </button>
+          <CurrencySelect
+            currencies={currencies}
+            selected={toCurrency}
+            onCurrencyChange={setToCurrency}
+            amount={value}
+            onAmountChange={handleValueChange}
+            show={false}
+          />
+          <label>
+            Resultado: <span>{resultado}</span>
+          </label>
+        </div>
+      )}
     </div>
   );
 };

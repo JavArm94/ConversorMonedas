@@ -64,7 +64,10 @@ export const fetchConversion = async (from, to) => {
     const response = await axios.get(
       `${apiUrl}/convert?access_key=${apiKey}&from=${from}&to=${to}&amount=1`
     );
-    console.log(`[Official -> Official] API response:`, response.data);
+    console.log(
+      `[Official -> Official] API response:${from}a${to}`,
+      response.data
+    );
 
     if (!response.data || typeof response.data.result !== "number") {
       console.error("Respuesta API inesperada:", response.data);

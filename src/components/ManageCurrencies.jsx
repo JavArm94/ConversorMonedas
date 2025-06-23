@@ -39,6 +39,7 @@ const ManageCurrencies = () => {
     setMonedasPersonalizadas(personalizadas);
 
     dispatch({ type: "FORCE_RELOAD_CURRENCIES" });
+    dispatch({ type: "FORCE_RECONVERT" });
   };
 
   useEffect(() => {
@@ -87,10 +88,31 @@ const ManageCurrencies = () => {
     }, 500);
   };
 
+  // const handleDelete = (nombre) => {
+  //   localStorage.removeItem(`moneda_${nombre.toLowerCase()}`);
+  //   setMonedasPersonalizadas((prev) => prev.filter((m) => m.nombre !== nombre));
+  //   dispatch({ type: "FORCE_RELOAD_CURRENCIES" });
+  //   dispatch({ type: "FORCE_RECONVERT" });
+  // };
+
   const handleDelete = (nombre) => {
     localStorage.removeItem(`moneda_${nombre.toLowerCase()}`);
-    setMonedasPersonalizadas((prev) => prev.filter((m) => m.nombre !== nombre));
+    const actualizadas = monedasPersonalizadas.filter(
+      (m) => m.nombre !== nombre
+    );
+    setMonedasPersonalizadas(actualizadas);
+
+    // Dispara el refresco del estado global
     dispatch({ type: "FORCE_RELOAD_CURRENCIES" });
+
+    // También forzamos una reconversión con valores válidos por si se borró una moneda usada actualmente
+    dispatch({
+      type: "FORCE_CONVERSION_FALLBACK",
+      payload: {
+        fallbackFrom: "USD",
+        fallbackTo: "ARS",
+      },
+    });
   };
 
   return (
