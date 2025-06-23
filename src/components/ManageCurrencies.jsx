@@ -47,9 +47,17 @@ const ManageCurrencies = () => {
   }, []);
 
   const handleChange = (index, value) => {
+    const num = parseFloat(value);
     const actualizadas = [...monedasPersonalizadas];
-    actualizadas[index].cantidad = parseFloat(value);
-    setMonedasPersonalizadas(actualizadas);
+
+    if (!isNaN(num) && num > 0) {
+      actualizadas[index].cantidad = num;
+      setMonedasPersonalizadas(actualizadas);
+    } else if (value === "") {
+      actualizadas[index].cantidad = "";
+      setMonedasPersonalizadas(actualizadas);
+    }
+    // Si es 0, negativo o NaN, no actualiza
   };
 
   const handleSave = async (moneda) => {
@@ -88,13 +96,6 @@ const ManageCurrencies = () => {
     }, 500);
   };
 
-  // const handleDelete = (nombre) => {
-  //   localStorage.removeItem(`moneda_${nombre.toLowerCase()}`);
-  //   setMonedasPersonalizadas((prev) => prev.filter((m) => m.nombre !== nombre));
-  //   dispatch({ type: "FORCE_RELOAD_CURRENCIES" });
-  //   dispatch({ type: "FORCE_RECONVERT" });
-  // };
-
   const handleDelete = (nombre) => {
     localStorage.removeItem(`moneda_${nombre.toLowerCase()}`);
     const actualizadas = monedasPersonalizadas.filter(
@@ -102,10 +103,7 @@ const ManageCurrencies = () => {
     );
     setMonedasPersonalizadas(actualizadas);
 
-    // Dispara el refresco del estado global
     dispatch({ type: "FORCE_RELOAD_CURRENCIES" });
-
-    // También forzamos una reconversión con valores válidos por si se borró una moneda usada actualmente
     dispatch({
       type: "FORCE_CONVERSION_FALLBACK",
       payload: {
@@ -118,14 +116,13 @@ const ManageCurrencies = () => {
   return (
     <div>
       <h3>Monedas Personalizadas</h3>
-      {isSaving && <p style={{ color: "green" }}>Guardando moneda...</p>}
 
       {monedasPersonalizadas.length === 0 ? (
         <p>No hay monedas personalizadas.</p>
       ) : (
         monedasPersonalizadas.map((moneda, index) => {
           const cantidad = moneda.cantidad;
-          const valorUSD = 1 / cantidad;
+          const valorUSD = cantidad > 0 ? 1 / cantidad : 0;
 
           return (
             <div
@@ -142,9 +139,7 @@ const ManageCurrencies = () => {
             >
               <strong>{moneda.nombre}</strong>
 
-              <div
-                style={{ display: "flex", gap: "1rem", alignItems: "center" }}
-              >
+              <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
                 <label>Cantidad (equivale a 1 USD):</label>
                 <input
                   type="number"
@@ -155,12 +150,14 @@ const ManageCurrencies = () => {
                 />
               </div>
 
-              <div>
-                <p>
-                  <strong>Valor unitario en USD:</strong>{" "}
-                  {formatValor(valorUSD)}
-                </p>
-              </div>
+              {cantidad > 0 && (
+                <div>
+                  <p>
+                    <strong>Valor unitario en USD:</strong>{" "}
+                    {formatValor(valorUSD)}
+                  </p>
+                </div>
+              )}
 
               <div style={{ display: "flex", gap: "1rem" }}>
                 <button onClick={() => handleSave(moneda)}>Guardar</button>

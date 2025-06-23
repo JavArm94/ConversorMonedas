@@ -52,6 +52,7 @@ const CreateCurrency = () => {
             className="amountInput"
             type="text"
             placeholder="Ej: MiPeso"
+            maxLength={15} 
             value={nombreMoneda}
             onChange={(e) => setNombreMoneda(e.target.value.toUpperCase())}
           />

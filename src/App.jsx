@@ -27,15 +27,16 @@ function App() {
           <div className="card tax-card">
             <TaxSelect />
           </div>
-          <div style={{ marginTop: "2rem" }}>
-            <button onClick={toggleModo}>
+
+          <div>
+            <div className="card create-card">
+
+            <button className="bntCreateEditDelete" onClick={toggleModo}>
               {modoGestionMoneda === "crear"
                 ? "Editar/Eliminar monedas"
                 : "Crear moneda"}
             </button>
-          </div>
-          <div style={{ marginTop: "1rem" }}>
-            <div className="card create-card">
+            <hr className="divider"></hr>
               {modoGestionMoneda === "crear" && <CreateCurrency />}
 
               {modoGestionMoneda === "editar" && <ManageCurrencies />}

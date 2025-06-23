@@ -155,6 +155,7 @@ const CurrencyExchange = () => {
         </div>
       ) : (
         <div className="exchangeBox">
+          <div className="noResult">
           <CurrencySelect
             currencies={currencies}
             selected={fromCurrency}
@@ -173,6 +174,7 @@ const CurrencyExchange = () => {
             onAmountChange={handleValueChange}
             show={false}
           />
+          </div>
           <label>
             Resultado: <span>{resultado}</span>
           </label>
