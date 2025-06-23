@@ -19,12 +19,15 @@ function App() {
       <GlobalStyles />
       <CurrencyProvider>
         <div className="app-container">
-          <h1 className="title">DiviEx</h1>
+          <h2 className="title">DiviEx</h2>
           {/* {/*<div className="main-section"> */}
+
           <div className="card exchange-card">
+          <h2>Conversion de divisas</h2>
             <CurrencyExchange />
           </div>
           <div className="card tax-card">
+          <h2>Conversion de divisas</h2>
             <TaxSelect />
           </div>
 
