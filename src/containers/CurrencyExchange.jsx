@@ -6,7 +6,7 @@ import currencyData from "../assets/CurrencyTranslate.json";
 
 const CurrencyExchange = () => {
   const { state, dispatch } = useCurrencyContext();
-  const { currencies, conversion, error } = state;
+  const { currencies, conversion } = state;
 
   const [fromCurrency, setFromCurrency] = useState("");
   const [toCurrency, setToCurrency] = useState("");
@@ -156,24 +156,24 @@ const CurrencyExchange = () => {
       ) : (
         <div className="exchangeBox">
           <div className="noResult">
-          <CurrencySelect
-            currencies={currencies}
-            selected={fromCurrency}
-            onCurrencyChange={setFromCurrency}
-            amount={value}
-            onAmountChange={handleValueChange}
-          />
-          <button onClick={handleSwap} disabled={isFetching}>
-            ⇄
-          </button>
-          <CurrencySelect
-            currencies={currencies}
-            selected={toCurrency}
-            onCurrencyChange={setToCurrency}
-            amount={value}
-            onAmountChange={handleValueChange}
-            show={false}
-          />
+            <CurrencySelect
+              currencies={currencies}
+              selected={fromCurrency}
+              onCurrencyChange={setFromCurrency}
+              amount={value}
+              onAmountChange={handleValueChange}
+            />
+            <button onClick={handleSwap} disabled={isFetching}>
+              ⇄
+            </button>
+            <CurrencySelect
+              currencies={currencies}
+              selected={toCurrency}
+              onCurrencyChange={setToCurrency}
+              amount={value}
+              onAmountChange={handleValueChange}
+              show={false}
+            />
           </div>
           <label>
             Resultado: <span>{resultado}</span>
