@@ -8,9 +8,9 @@ Características
 -Selección de más de 150 monedas diferentes
 
 Requisitos previos
--Node.js (versión 16 o superior)
--npm o yarn
--Una API key gratuita de ExchangeRate.host
+ Node.js (versión 16 o superior)
+ npm o yarn
+ Una API key gratuita de ExchangeRate.host
 
 Configuración
 -Clona el repositorio
