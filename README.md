@@ -1,12 +1,33 @@
-# React + Vite
+Conversor de Monedas
+Una aplicación de conversión de monedas desarrollada con React + Vite que utiliza la API de ExchangeRate.host.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Características
+Conversión en tiempo real entre múltiples monedas
 
-Currently, two official plugins are available:
+Interfaz intuitiva y fácil de usar
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Diseño responsive (funciona en móviles y desktop)
 
-## Expanding the ESLint configuration
+Historial de conversiones recientes
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Selección de más de 150 monedas diferentes
+
+Requisitos previos
+Node.js (versión 16 o superior)
+
+npm o yarn
+
+Una API key gratuita de ExchangeRate.host
+
+Configuración
+Clona el repositorio
+
+Navega al directorio del proyecto
+
+Instala las dependencias con npm install o yarn install
+
+Crea un archivo .env en la raíz del proyecto con:
+VITE_API_KEY=tu_api_key_aqui
+VITE_API_URL=https://api.exchangerate.host
+
+Inicia la aplicación en modo desarrollo con npm run dev
