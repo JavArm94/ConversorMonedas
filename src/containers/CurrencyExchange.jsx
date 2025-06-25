@@ -144,8 +144,6 @@ const CurrencyExchange = () => {
 
   const loadingGlobal = !initialized || isFetching || resultado === null;
 
-  // if (error) return <p>Error: {error}</p>;
-
   return (
     <div className="sentCurrencyExchange">
       {loadingGlobal ? (

@@ -14,15 +14,13 @@ export const fetchConversion = async (from, to) => {
       (c) => c.nombre.toUpperCase() === to.toUpperCase()
     );
 
-    // Caso: Ambas monedas son personalizadas
     if (fromCustom && toCustom) {
-      const usdValue = 1 * fromCustom.valor; // valor 1 "from" en USD
-      const result = usdValue / toCustom.valor; // valor convertido
+      const usdValue = 1 * fromCustom.valor;
+      const result = usdValue / toCustom.valor;
       console.log(`[Custom -> Custom] ${from} to ${to}:`, result);
       return result;
     }
 
-    // Caso: "from" es personalizada, "to" oficial
     if (fromCustom) {
       const usdAmount = 1 * fromCustom.valor;
       if (to.toUpperCase() === "USD") {
@@ -43,7 +41,6 @@ export const fetchConversion = async (from, to) => {
       return response.data.result;
     }
 
-    // Caso: "to" es personalizada, "from" oficial
     if (toCustom) {
       const response = await axios.get(
         `${apiUrl}/convert?access_key=${apiKey}&from=${from}&to=USD&amount=1`
@@ -60,7 +57,6 @@ export const fetchConversion = async (from, to) => {
       return result;
     }
 
-    // Caso: Ambas oficiales
     const response = await axios.get(
       `${apiUrl}/convert?access_key=${apiKey}&from=${from}&to=${to}&amount=1`
     );

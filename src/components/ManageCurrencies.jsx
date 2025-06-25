@@ -57,7 +57,6 @@ const ManageCurrencies = () => {
       actualizadas[index].cantidad = "";
       setMonedasPersonalizadas(actualizadas);
     }
-    // Si es 0, negativo o NaN, no actualiza
   };
 
   const handleSave = async (moneda) => {
@@ -139,7 +138,14 @@ const ManageCurrencies = () => {
             >
               <strong>{moneda.nombre}</strong>
 
-              <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "1rem",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 <label>Cantidad (equivale a 1 USD):</label>
                 <input
                   type="number"
@@ -151,7 +157,7 @@ const ManageCurrencies = () => {
               </div>
 
               {cantidad > 0 && (
-                <div>
+                <div style={{ textAlign: "center" }}>
                   <p>
                     <strong>Valor unitario en USD:</strong>{" "}
                     {formatValor(valorUSD)}
@@ -159,7 +165,13 @@ const ManageCurrencies = () => {
                 </div>
               )}
 
-              <div style={{ display: "flex", gap: "1rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: "1rem",
+                }}
+              >
                 <button onClick={() => handleSave(moneda)}>Guardar</button>
                 <button
                   onClick={() => handleDelete(moneda.nombre)}
